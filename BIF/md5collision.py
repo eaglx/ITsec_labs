@@ -13,11 +13,13 @@ if len(sys.argv) < 2:
 
 to_crash = sys.argv[1]
 
-result = hashlib.md5(to_crash.encode())
-result = hashlib.md5(result.digest())
+in_text_hash = hashlib.md5(to_crash.encode())
+in_text_hash = hashlib.md5(in_text_hash.digest())
 
-print("Hash of input: ", end='')
-print(result.hexdigest())
+print("Full hash of input: ", end='')
+print(in_text_hash.hexdigest())
+print("First 56 bytes of hash of input: ", end='')
+print(in_text_hash.hexdigest()[:7])
 
 
 print("\n$$$$$$$$$$ FINISH $$$$$$$$$$$$$\n")
