@@ -1,71 +1,74 @@
 import sys
 import hashlib
+import binascii
 
-print("\n$$$$$$$$$$$$$$$$$$$$$$$$$$")
-print("md5collision ver 0.1a")
-print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
-print("$$$$$$$$$$$$ START $$$$$$$$$$$$$$\n")
+print("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+print("md5collision ver 0.1c")
+print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n")
+print("****************** START ******************\n")
 
 if len(sys.argv) < 2:
     print("Not enough args!")
-    print("python2 md5collision.py string_to_find_collision")
+    print("python3 md5collision.py string_to_find_collision")
     exit()
 
-def hashGen(text):
-    temp = hashlib.md5(text).hexdigest()
-    bytes = []
-    temp = ''.join(temp.split(" "))
-    for i in range(0, len(temp), 2):
-        bytes.append(chr(int(temp[i:i+2], 16)))
-    first_hash = ''.join(bytes)
-    return hashlib.md5(first_hash).hexdigest()[0:14]
+prefix = sys.argv[1]
+prefix_unhex = str(binascii.unhexlify(prefix.encode()), "ascii")
 
-def floydSolver(text):
+def hashGen(text):
+    return  hashlib.md5(hashlib.md5((prefix_unhex + text).encode()).digest()).hexdigest()
+
+def hashGenHare(text):
+    partial = hashGen(text)
+    return hashGen(partial)
+
+def floydSolver():
+    text =  prefix #str(binascii.hexlify(prefix.encode()), "ascii")
+    print("Input: ", prefix, "\n")
+    #print("Input <hex>: ", text)
+    print("<<<<<<<<< STAGE 0 >>>>>>>>>")
     tortoise = hashGen(text)
-    hare = hashGen(hashGen(text))
+    hare = hashGenHare(text)
+    print(" 0000000", "\t", "tortoise: ", tortoise[0:14], " hare: ", hare[0:14])
+    
     counter = 0
     final = ""
-    print("<STAGE 1>")
-    while(tortoise != hare):
+    print("<<<<<<<<< STAGE 1 >>>>>>>>>")
+    while(tortoise[0:14] != hare[0:14]):
         tortoise = hashGen(tortoise)
-        hare = hashGen(hashGen(hare))
+        hare = hashGenHare(hare)
         counter += 1
         if(counter % 10000000) == 0:
-            print(counter)
+            print("", counter, "\t", tortoise[0:14], " ",hare[0:14])
+    
+    print("<<<<<<<<< STAGE 2 >>>>>>>>>")
     tortoise = text
-    print("<STAGE 2>")
     counter = 0
     temp_tortoise = 0
     temp_hare = 0
-    while(tortoise != hare):
+    while(tortoise[0:14] != hare[0:14]):
         tortoise = hashGen(tortoise)
-        here = hashGen(hare)
+        hare = hashGen(hare)
         counter += 1
         if(counter % 10000000) == 0:
-            print(counter)
-        if(tortoise != hare):
+            print("", counter, "\t", tortoise[0:14], " ",hare[0:14])
+        
+        if(tortoise[0:14] != hare[0:14]):
             temp_tortoise = tortoise
             temp_hare = hare
-        if(hashGen(tortoise) == hashGen(hare)):
+            continue
+        
+        if( hashGen(tortoise)[0:14] ==  hashGen(hare)[0:14]):
             print("FOUND HASHES")
             print("tortoise: ", temp_tortoise)
             print("hare: ", temp_hare)
-            final = 'tortoise: ' + temp_tortoise + '\n' + 'hare: ' + temp_hare
-            with open('hashes.log', 'w') as f:
-                f.write(final)
-            break
+  
     print("CHECKING CALCULATIONS ...")
-    print("tortoise ", temp_tortoise, " > ", hashGen(temp_tortoise))
-    print("hare ", temp_hare, " > ", hashGen(temp_hare))
+    print("COLLISION:")
+    print("", prefix, " tortoise ", temp_tortoise, " > ",  hashlib.md5(hashlib.md5((prefix + temp_tortoise).encode()).digest()).hexdigest())
+    print("", prefix, " hare ", temp_hare, " > ", hashlib.md5(hashlib.md5((prefix + temp_hare).encode()).digest()).hexdigest())
 
-to_crash = sys.argv[1]
-in_text_hash = hashlib.md5(to_crash.encode())
-in_text_hash = hashlib.md5(in_text_hash.digest())
 
-print("Full hash of input: ")
-print(in_text_hash.hexdigest())
-print("First 56 bytes of hash of input: ")
-print(in_text_hash.hexdigest()[:7])
+floydSolver()
 
-floydSolver(to_crash)
-print("\n$$$$$$$$$$ FINISH $$$$$$$$$$$$$\n")
+print("\n****************** FINISH ******************\n")
