@@ -3,7 +3,7 @@ import hashlib
 import binascii
 
 print("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-print("\tmd5collision ver 0.1c")
+print("\tmd5collision ver 0.1e")
 print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n")
 print("****************** START ******************\n")
 
@@ -13,11 +13,11 @@ if len(sys.argv) < 2:
     exit()
 
 prefix = sys.argv[1]
-#prefix_unhex = str(binascii.unhexlify(prefix.encode()), "utf-8")
+prefix_unhex = str(binascii.unhexlify(prefix.encode()), "utf-8")
 length_to_analysis = 14
 
 def hashGen(text):
-    return  hashlib.md5(hashlib.md5((prefix + text).encode()).digest()).hexdigest()
+    return  hashlib.md5(hashlib.md5((prefix_unhex + text).encode()).digest()).hexdigest()
 
 def hashGenHare(text):
     partial = hashGen(text)[0:length_to_analysis]
@@ -29,7 +29,7 @@ def floydSolver():
     print("<<<<<<<<< STAGE 0 >>>>>>>>>")
     tortoise = hashGen(text)[0:length_to_analysis]
     hare = hashGenHare(text)[0:length_to_analysis]
-    print(" 0000000", "\t", "tortoise: ", tortoise[0:length_to_analysis], " hare: ", hare[0:length_to_analysis])
+    print(" 00000000", "\t", "tortoise: ", tortoise[0:length_to_analysis], " hare: ", hare[0:length_to_analysis])
     
     counter = 0
     print("<<<<<<<<< STAGE 1 >>>>>>>>>")
@@ -64,8 +64,8 @@ def floydSolver():
             break
   
     print("COLLISION:")
-    print("1 <hex>: ", prefix + temp_tortoise, " > ",  hashlib.md5(hashlib.md5((prefix + temp_tortoise).encode()).digest()).hexdigest())
-    print("2 <hex>; ", prefix + temp_hare, " > ", hashlib.md5(hashlib.md5((prefix + temp_hare).encode()).digest()).hexdigest())
+    print("1: prefix<hex>: ", prefix, " tort: ", temp_tortoise, " > ",  hashlib.md5(hashlib.md5((prefix_unhex + temp_tortoise).encode()).digest()).hexdigest())
+    print("2: prefix<hex>: ", prefix, " hare: ", temp_hare, " > ", hashlib.md5(hashlib.md5((prefix_unhex + temp_hare).encode()).digest()).hexdigest())
 
 
 floydSolver()
