@@ -13,7 +13,7 @@ if len(sys.argv) < 2:
     exit()
 
 prefix = sys.argv[1]
-prefix_unhex = str(binascii.unhexlify(prefix.encode()), "utf-8")
+prefix_unhex = str(binascii.unhexlify(prefix.encode()), "cp1252") # replace "utf-8", issue with 0x93
 length_to_analysis = 14
 
 def hashGen(text):
