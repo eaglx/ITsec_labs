@@ -3,7 +3,7 @@ import hashlib
 import binascii
 
 print("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-print("md5collision ver 0.1c")
+print("\tmd5collision ver 0.1c")
 print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n")
 print("****************** START ******************\n")
 
@@ -13,10 +13,10 @@ if len(sys.argv) < 2:
     exit()
 
 prefix = sys.argv[1]
-prefix_unhex = str(binascii.unhexlify(prefix.encode()), "ascii")
+#prefix_unhex = str(binascii.unhexlify(prefix.encode()), "utf-8")
 
 def hashGen(text):
-    return  hashlib.md5(hashlib.md5((prefix_unhex + text).encode()).digest()).hexdigest()
+    return  hashlib.md5(hashlib.md5((prefix + text[0:11]).encode()).digest()).hexdigest()
 
 def hashGenHare(text):
     partial = hashGen(text)
@@ -24,15 +24,13 @@ def hashGenHare(text):
 
 def floydSolver():
     text =  prefix #str(binascii.hexlify(prefix.encode()), "ascii")
-    print("Input: ", prefix, "\n")
-    #print("Input <hex>: ", text)
+    print("Input hex: ", prefix, "\n")#"Input: ", prefix_unhex, " Input bin", prefix_unhex.encode(), "\n")
     print("<<<<<<<<< STAGE 0 >>>>>>>>>")
     tortoise = hashGen(text)
     hare = hashGenHare(text)
-    print(" 0000000", "\t", "tortoise: ", tortoise[0:14], " hare: ", hare[0:14])
+    print(" 00000000", "\t", "tortoise: ", tortoise[0:14], " hare: ", hare[0:14])
     
     counter = 0
-    final = ""
     print("<<<<<<<<< STAGE 1 >>>>>>>>>")
     while(tortoise[0:14] != hare[0:14]):
         tortoise = hashGen(tortoise)
@@ -54,19 +52,20 @@ def floydSolver():
             print("", counter, "\t", tortoise[0:14], " ",hare[0:14])
         
         if(tortoise[0:14] != hare[0:14]):
-            temp_tortoise = tortoise
-            temp_hare = hare
+            temp_tortoise = tortoise[0:14]
+            temp_hare = hare[0:14]
             continue
         
         if( hashGen(tortoise)[0:14] ==  hashGen(hare)[0:14]):
             print("FOUND HASHES")
-            print("tortoise: ", temp_tortoise)
-            print("hare: ", temp_hare)
+            print("tortoise:\t", temp_tortoise)
+            print("hare:\t\t", temp_hare)
+            break
   
     print("CHECKING CALCULATIONS ...")
     print("COLLISION:")
-    print("", prefix, " tortoise ", temp_tortoise, " > ",  hashlib.md5(hashlib.md5((prefix + temp_tortoise).encode()).digest()).hexdigest())
-    print("", prefix, " hare ", temp_hare, " > ", hashlib.md5(hashlib.md5((prefix + temp_hare).encode()).digest()).hexdigest())
+    print("1 <hex>: ", prefix + temp_tortoise[0:11], " > ",  hashGen(temp_tortoise))
+    print("2 <hex>; ", prefix + temp_hare[0:11], " > ", hashGen(temp_hare))
 
 
 floydSolver()
