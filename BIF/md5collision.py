@@ -14,58 +14,58 @@ if len(sys.argv) < 2:
 
 prefix = sys.argv[1]
 #prefix_unhex = str(binascii.unhexlify(prefix.encode()), "utf-8")
+length_to_analysis = 14
 
 def hashGen(text):
-    return  hashlib.md5(hashlib.md5((prefix + text[0:11]).encode()).digest()).hexdigest()
+    return  hashlib.md5(hashlib.md5((prefix + text).encode()).digest()).hexdigest()
 
 def hashGenHare(text):
-    partial = hashGen(text)
+    partial = hashGen(text)[0:length_to_analysis]
     return hashGen(partial)
 
 def floydSolver():
     text =  prefix #str(binascii.hexlify(prefix.encode()), "ascii")
     print("Input hex: ", prefix, "\n")#"Input: ", prefix_unhex, " Input bin", prefix_unhex.encode(), "\n")
     print("<<<<<<<<< STAGE 0 >>>>>>>>>")
-    tortoise = hashGen(text)
-    hare = hashGenHare(text)
-    print(" 00000000", "\t", "tortoise: ", tortoise[0:14], " hare: ", hare[0:14])
+    tortoise = hashGen(text)[0:length_to_analysis]
+    hare = hashGenHare(text)[0:length_to_analysis]
+    print(" 00000000", "\t", "tortoise: ", tortoise[0:length_to_analysis], " hare: ", hare[0:length_to_analysis])
     
     counter = 0
     print("<<<<<<<<< STAGE 1 >>>>>>>>>")
-    while(tortoise[0:14] != hare[0:14]):
-        tortoise = hashGen(tortoise)
-        hare = hashGenHare(hare)
+    while(tortoise[0:length_to_analysis] != hare[0:length_to_analysis]):
+        tortoise = hashGen(tortoise)[0:length_to_analysis]
+        hare = hashGenHare(hare)[0:length_to_analysis]
         counter += 1
         if(counter % 10000000) == 0:
-            print("", counter, "\t", tortoise[0:14], " ",hare[0:14])
+            print("", counter, "\t", tortoise[0:length_to_analysis], " ",hare[0:length_to_analysis])
     
     print("<<<<<<<<< STAGE 2 >>>>>>>>>")
     tortoise = text
     counter = 0
     temp_tortoise = 0
     temp_hare = 0
-    while(tortoise[0:14] != hare[0:14]):
-        tortoise = hashGen(tortoise)
-        hare = hashGen(hare)
+    while(tortoise[0:length_to_analysis] != hare[0:length_to_analysis]):
+        tortoise = hashGen(tortoise)[0:length_to_analysis]
+        hare = hashGen(hare)[0:length_to_analysis]
         counter += 1
         if(counter % 10000000) == 0:
-            print("", counter, "\t", tortoise[0:14], " ",hare[0:14])
+            print("", counter, "\t", tortoise[0:length_to_analysis], " ",hare[0:length_to_analysis])
         
-        if(tortoise[0:14] != hare[0:14]):
-            temp_tortoise = tortoise[0:14]
-            temp_hare = hare[0:14]
+        if(tortoise[0:length_to_analysis] != hare[0:length_to_analysis]):
+            temp_tortoise = tortoise
+            temp_hare = hare
             continue
         
-        if( hashGen(tortoise)[0:14] ==  hashGen(hare)[0:14]):
+        if( hashGen(tortoise)[0:length_to_analysis] ==  hashGen(hare)[0:length_to_analysis]):
             print("FOUND HASHES")
             print("tortoise:\t", temp_tortoise)
             print("hare:\t\t", temp_hare)
             break
   
-    print("CHECKING CALCULATIONS ...")
     print("COLLISION:")
-    print("1 <hex>: ", prefix + temp_tortoise[0:11], " > ",  hashGen(temp_tortoise))
-    print("2 <hex>; ", prefix + temp_hare[0:11], " > ", hashGen(temp_hare))
+    print("1 <hex>: ", prefix + temp_tortoise, " > ",  hashlib.md5(hashlib.md5((prefix + temp_tortoise).encode()).digest()).hexdigest())
+    print("2 <hex>; ", prefix + temp_hare, " > ", hashlib.md5(hashlib.md5((prefix + temp_hare).encode()).digest()).hexdigest())
 
 
 floydSolver()
