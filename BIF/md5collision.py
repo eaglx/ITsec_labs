@@ -29,7 +29,7 @@ def floydSolver():
     print("<<<<<<<<< STAGE 0 >>>>>>>>>")
     tortoise = hashGen(text)[0:length_to_analysis]
     hare = hashGenHare(text)[0:length_to_analysis]
-    print(" 00000000", "\t", "tortoise: ", tortoise[0:length_to_analysis], " hare: ", hare[0:length_to_analysis])
+    print(" 0000000", "\t", "tortoise: ", tortoise[0:length_to_analysis], " hare: ", hare[0:length_to_analysis])
     
     counter = 0
     print("<<<<<<<<< STAGE 1 >>>>>>>>>")
@@ -37,7 +37,7 @@ def floydSolver():
         tortoise = hashGen(tortoise)[0:length_to_analysis]
         hare = hashGenHare(hare)[0:length_to_analysis]
         counter += 1
-        if(counter % 10000000) == 0:
+        if(counter % 1000000) == 0:
             print("", counter, "\t", tortoise[0:length_to_analysis], " ",hare[0:length_to_analysis])
     
     print("<<<<<<<<< STAGE 2 >>>>>>>>>")
@@ -49,7 +49,7 @@ def floydSolver():
         tortoise = hashGen(tortoise)[0:length_to_analysis]
         hare = hashGen(hare)[0:length_to_analysis]
         counter += 1
-        if(counter % 10000000) == 0:
+        if(counter % 1000000) == 0:
             print("", counter, "\t", tortoise[0:length_to_analysis], " ",hare[0:length_to_analysis])
         
         if(tortoise[0:length_to_analysis] != hare[0:length_to_analysis]):
